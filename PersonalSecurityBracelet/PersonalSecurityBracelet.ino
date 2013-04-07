@@ -16,15 +16,25 @@ unsigned long oldTime = 0;
 unsigned long timeDelta = 0;
 unsigned long threshold = 2500;
 
+unsigned long clickTime;
+
+struct steps {
+  boolean one;
+  boolean two;
+  boolean three;
+};
+
+steps stepsvar = {false, false, false};
+
+boolean doubleclick = false;
+boolean clicked = false;
+
 // the setup routine runs once when you press reset:
 void setup() {                
   // initialize the digital pin as an output.
   Serial.begin(115200);
   pinMode(buttonPin, INPUT); 
-  digitalWrite(buttonPin, HIGH);     // sets the default (unpressed) state of switchPin to HIGH
-
-
-
+  digitalWrite(buttonPin, HIGH); // sets the default (unpressed) state of switchPin to HIGH
 }
 
 // the loop routine runs over and over again forever:
@@ -34,6 +44,20 @@ void loop() {
 
   if (buttonState == LOW) {
 
+    if (!clicked && stepsvar.two) {
+
+      doubleclick = true;
+    }
+
+    else {
+      clicked = true;
+      clickTime = millis();
+      doubleclick = false;
+      stepsvar.one = true;
+      stepsvar.two = false;
+      stepsvar.three = false;
+    }
+
     if (oldTime > 0)
     {
       timeDelta += millis() - oldTime;
@@ -41,7 +65,7 @@ void loop() {
 
       if (timeDelta > threshold) 
       {
-        Serial.println("Hello world!");
+        Serial.println("EMERGENCY!");
         timeDelta = 0;
         oldTime = 0;
       }
@@ -53,7 +77,24 @@ void loop() {
 
   else {
 
-    timeDelta = 0;
+    if (clicked) {
+        stepsvar.two = true;
+	clicked = false;
+	doubleclick = false;
+    }
+
+    if (doubleclick) {
+      if (millis() - clickTime < 2000) {
+        Serial.println("CANCEL");
+      }
+      
+      clicked = false;
+      doubleclick = false;
+      stepsvar.one = false;
+      stepsvar.two = false;
+      stepsvar.three = false;
+    }
+
   }
 }
 
