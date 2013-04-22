@@ -38,6 +38,10 @@ void loop() {
   // Save click codes in LEDfunction, as click codes are reset at next Update()
   if (button.click != 0) LEDfunction = button.click;
 
+  if(button.click == 1) {
+      printed = false;
+  }
+
   if (oldLEDfunction != LEDfunction) {
       printed = false;
   }
@@ -47,21 +51,21 @@ void loop() {
   if(LEDfunction == 2) {
 
       if (!printed) {
-	  Serial.println("CANCEL");
-	  printed = true;
-      }
-
-      blink = false;
-  }
-
-  if(LEDfunction == -1) {
-      if (!printed) {
-	  Serial.println("EMERGENCY");
+	  Serial.print("1");
 	  printed = true;
       }
       ledState = (millis()/2000)%2;
       blink = true;
-  
+  }
+
+  if(LEDfunction == -1) {
+
+      if (!printed) {
+	  Serial.print("2");
+	  printed = true;
+      }
+
+      blink = false;
   }
 
 
